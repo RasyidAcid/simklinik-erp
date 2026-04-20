@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\KodePengajuanController;
 use App\Http\Controllers\PengajuanController;
+use App\Models\Pengajuan;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,8 +29,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', function () {
-        return inertia('Dashboard');
-    })->name('dashboard');
+    return Inertia::render('Dashboard', [
+        'total' => Pengajuan::count(),
+        'approve' => Pengajuan::where('status_setujui', 1)->count(),
+        'proses' => Pengajuan::where('status_proses', 1)->count(),
+    ]);
+})->middleware(['auth'])->name('dashboard');
 
 
     // Profile
