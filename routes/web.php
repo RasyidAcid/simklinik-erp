@@ -4,33 +4,64 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RekeningController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaporanController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\KodePengajuanController;
+use App\Http\Controllers\PengajuanController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
+/*
+|--------------------------------------------------------------------------
+| Redirect Root ke Login
+|--------------------------------------------------------------------------
+*/
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-  
+/*
+|--------------------------------------------------------------------------
+| Route yang butuh login
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+
+    // Dashboard
+    Route::get('/dashboard', function () {
+        return inertia('Dashboard');
+    })->name('dashboard');
+
+
+    // Profile
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+
+
+    // Master Data
+    Route::resource('rekening', RekeningController::class);
+    Route::resource('user', UserController::class);
+
+    // kode pengajuan
+    Route::resource('kode-pengajuan', KodePengajuanController::class)->middleware('auth');
+
+    // Pengajuan
+    Route::resource('pengajuan', PengajuanController::class)->middleware('auth');
+
+    // Laporan
+    Route::prefix('laporan')->group(function () {
+        Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/rekening/pdf', [LaporanController::class, 'rekeningPdf'])->name('laporan.rekening.pdf');
+        Route::get('/rekening/download', [LaporanController::class, 'rekeningDownload'])->name('laporan.rekening.download');
+    });
+
 });
 
-  Route::resource('rekening', RekeningController::class);
-Route::resource('user', UserController::class);
-  Route::get('/laporan', [LaporanController::class, 'index']);
-Route::get('/laporan/rekening/pdf', [LaporanController::class, 'rekeningPdf']);
-Route::get('/laporan/rekening/download', [LaporanController::class, 'rekeningDownload']);
+
+/*
+|--------------------------------------------------------------------------
+| Auth Route (login, register, dll)
+|--------------------------------------------------------------------------
+*/
 require __DIR__.'/auth.php';

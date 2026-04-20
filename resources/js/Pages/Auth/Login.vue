@@ -1,100 +1,111 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3'
 
-defineProps({
-    canResetPassword: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
-});
+const props = defineProps({
+    canResetPassword: Boolean,
+    status: String,
+})
 
 const form = useForm({
     email: '',
     password: '',
     remember: false,
-});
+})
 
 const submit = () => {
     form.post(route('login'), {
         onFinish: () => form.reset('password'),
-    });
-};
+    })
+}
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Log in" />
+    <Head title="Login ERP" />
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
-            {{ status }}
-        </div>
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700">
+        <div class="w-full max-w-md">
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+            <!-- Card -->
+            <div class="bg-white rounded-2xl shadow-2xl p-8">
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
+                <!-- Logo / Title -->
+                <div class="text-center mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">ERP System</h1>
+                    <p class="text-gray-500 text-sm">Silakan login untuk melanjutkan</p>
+                </div>
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+                <!-- Status -->
+                <div v-if="status" class="mb-4 text-sm text-green-600 text-center">
+                    {{ status }}
+                </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <!-- Form -->
+                <form @submit.prevent="submit" class="space-y-5">
 
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
-                />
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input
+                            type="email"
+                            v-model="form.email"
+                            class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            placeholder="Masukkan email"
+                            required
+                        />
+                        <div v-if="form.errors.email" class="text-red-500 text-xs mt-1">
+                            {{ form.errors.email }}
+                        </div>
+                    </div>
 
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <input
+                            type="password"
+                            v-model="form.password"
+                            class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            placeholder="Masukkan password"
+                            required
+                        />
+                        <div v-if="form.errors.password" class="text-red-500 text-xs mt-1">
+                            {{ form.errors.password }}
+                        </div>
+                    </div>
 
-            <div class="mt-4 block">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
+                    <!-- Remember & Forgot -->
+                    <div class="flex items-center justify-between text-sm">
+                        <label class="flex items-center gap-2 text-gray-600">
+                            <input type="checkbox" v-model="form.remember" class="rounded" />
+                            Remember me
+                        </label>
+
+                        <Link
+                            v-if="canResetPassword"
+                            :href="route('password.request')"
+                            class="text-blue-600 hover:underline"
+                        >
+                            Lupa password?
+                        </Link>
+                    </div>
+
+                    <!-- Button -->
+                    <button
+                        type="submit"
+                        :disabled="form.processing"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition disabled:opacity-50"
                     >
-                </label>
+                        Login
+                    </button>
+
+                </form>
+
+                <!-- Footer -->
+                <div class="mt-6 text-center text-xs text-gray-400">
+                    © 2026 ERP System - All rights reserved
+                </div>
+
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Log in
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+        </div>
+    </div>
 </template>

@@ -13,7 +13,7 @@ const pdfUrl = ref('')
       <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
 
         <h1 class="text-2xl font-bold mb-6">
-          Menu Laporan
+          Master Rekening
         </h1>
 
         <!-- CARD -->
