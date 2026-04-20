@@ -32,6 +32,7 @@ class PengajuanController extends Controller
             'kas_bukti_no' => $request->kas_bukti_no,
             'kas_bukti_date' => $request->kas_bukti_date,
             'pj_code' => $request->pj_code,
+            'cab_code' => auth()->user()->cab_code,
             'kas_keperluan' => $request->kas_keperluan,
             'kas_notes' => $request->kas_notes,
             'user_login' => auth()->user()->name,
@@ -84,6 +85,31 @@ class PengajuanController extends Controller
 
         return redirect()->route('pengajuan.index')
             ->with('success', 'Data berhasil diupdate');
+    }
+
+    public function setujui(Request $request, $id)
+    {
+        $data = Pengajuan::findOrFail($id);
+
+        $data->status_setujui = 'YA';
+        $data->date_setujui = $request->date_setujui;
+        $data->kas_setujui = $request->nama;
+        $data->status_periksa = $request->status_periksa;
+
+        $data->save();
+
+        return back()->with('success', 'Berhasil disetujui');
+    }
+
+    public function proses(Request $r, $id)
+    {
+        $data = Pengajuan::findOrFail($id);
+        $data->status_proses = 1;
+        $data->date_proses = $r->tanggal;
+        $data->kas_proses = $r->nama;
+        $data->save();
+
+        return back()->with('success','Diproses');
     }
 
     public function destroy(Pengajuan $pengajuan)

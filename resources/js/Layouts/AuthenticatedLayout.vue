@@ -39,7 +39,7 @@ const toggleMenu = (menu) => {
   <aside class="w-64 bg-gray-800 dark:bg-gray-950 text-white">
 
     <div class="p-4 text-lg font-bold border-b border-gray-700">
-      ERP KLINIK
+      MEDICA GROUP
     </div>
 
     <nav class="p-4 space-y-3 text-sm">
@@ -93,10 +93,26 @@ const toggleMenu = (menu) => {
       </div>
 
       <!-- LAPORAN -->
-      <Link href="/laporan"
-        :class="['block p-2 rounded', page.url.startsWith('/laporan') ? 'bg-gray-700' : 'hover:bg-gray-700']">
-        Laporan
-      </Link>
+      <div>
+        <button @click="toggleMenu('laporan')"
+          class="w-full text-left p-2 rounded hover:bg-gray-700 flex justify-between">
+          <span>Laporan</span>
+          <span>{{ openMenu.transaksi ? '-' : '+' }}</span>
+        </button>
+
+        <div v-show="openMenu.laporan" class="ml-3 mt-2 space-y-1">
+          <Link href="/laporan"
+            :class="['block p-2 rounded', page.url.startsWith('/laporan') ? 'bg-gray-700' : 'hover:bg-gray-700']">
+            Master Rekening
+          </Link>
+        </div>
+        <div v-show="openMenu.laporan" class="ml-3 mt-2 space-y-1">
+          <Link href="/laporan-kode-pengajuan"
+            :class="['block p-2 rounded', page.url.startsWith('/laporan-kode-pengajuan') ? 'bg-gray-700' : 'hover:bg-gray-700']">
+            Master Kode Pengajuan
+          </Link>
+        </div>
+      </div>
 
     </nav>
   </aside>
@@ -106,14 +122,17 @@ const toggleMenu = (menu) => {
 
     <!-- NAVBAR -->
     <header class="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow p-4 flex justify-between">
-      <h1 class="font-semibold">ERP System</h1>
+      <h1 class="font-semibold">ERP System {{ $page.props.auth.user.cab_name ?? 'ALL CABANG' }}</h1>
 
+  
       <div class="flex items-center gap-4">
 
         <button @click="toggleDark" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700">
           <span v-if="dark">🌙</span>
           <span v-else>☀️</span>
         </button>
+
+     
 
         <span>{{ $page.props.auth.user.name }}</span>
 

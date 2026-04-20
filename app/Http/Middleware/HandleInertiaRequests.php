@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\Cabang;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -31,10 +32,21 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => $request->user()
-                    ? $request->user()->load('roles')
-                    : null,
-            ],
+            'user' => function () {
+                $user = auth()->user();
+
+                return $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'cab_code' => $user->cab_code,
+                    'cab_name' => $user->cab_code
+                        ? Cabang::where('cab_code', $user->cab_code)->value('cab_name')
+                        : 'Semua Cabang',
+                ] : null;
+            },
+        ],
         ]);
     }
 }
